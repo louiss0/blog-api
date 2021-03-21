@@ -1,0 +1,55 @@
+version: "3.8"
+
+services: 
+  
+  server:
+    
+    image: "nginx"
+
+    ports: 
+      - "8000:80"
+
+    depends_on: 
+  
+      - php
+
+    volumes: 
+  
+      - ./src:/var/www/html
+      
+      - ./src/nginx.conf:/etc/nginx/conf.d/default.conf:ro
+      
+      - ./src/logs/app-log.php:/var/www/html/logs/app-log.php
+      
+
+  php:
+    
+    build: 
+      
+      context: ./dockerfiles
+      
+      dockerfile: php.dockerfile
+    
+    volumes: 
+  
+      - ./src:/var/www/html:delegated
+
+      - ./src/xdebug.ini:/usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini 
+
+      
+    env_file: 
+      
+      - ./env-files/dev.env
+    
+    
+  composer:
+
+    build: 
+      
+      context: ./dockerfiles
+      
+      dockerfile: composer.dockerfile
+
+    volumes: 
+    
+      - ./src:/var/www/html:delegated
